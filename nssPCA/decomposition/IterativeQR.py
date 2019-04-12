@@ -1,23 +1,21 @@
 from nssPCA.decomposition._base import BaseDecompostion as __BaseDecompostion
 
+import numpy as np
+
 class IterativeQRDecomposition(__BaseDecompostion):
-    def qr_decomposition(data, extract_vectors=False):
+    def fit(self, data):
         X = data
         oMatrix = np.diag([1 for _ in range(data.shape[1])])
         while not np.allclose(X, np.triu(X)):
             Q, R = np.linalg.qr(X)
             oMatrix = np.dot(oMatrix, Q)
             X = np.dot(R, Q)
-        diagonal = np.diagonal(X)
+        eigenvalues = np.diagonal(X)
         
-        self.eigen_vectors = self.extract_eigenvectors(oMatrix, len(diagonal))
-        self.eigen_values = diagonal
-        self.__sort_pairs()
-        
-        
-    def transform(self, data):
-        pass
-       
-        
-    def inverse_transform(self, data):
-        pass
+        eigen_vectors = []
+        for i in range(len(eigenvalues)):
+            eigen_vectors.append(oMatrix[:,i])
+        self.components = np.array(eigen_vectors)
+    
+        self.eigen_values = np.array(eigenvalues)
+        super(IterativeQRDecomposition, self)._sort_pairs()

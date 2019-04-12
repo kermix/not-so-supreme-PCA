@@ -1,22 +1,20 @@
 from nssPCA.decomposition._base import BaseDecompostion as __BaseDecompostion
 
+import numpy as np
+
 class QRSVDecomposition(__BaseDecompostion):
-    def qrsvd_decomposition(data, gen_HHtransposed=False):
-        Q, R = np.linalg.qr(data if gen_HHtransposed else data.T)
+    def fit(self, data):
+        Q, R = np.linalg.qr(data if not self.axis else data.T)
         U, S, V = np.linalg.svd(R.T)
         S*=S
         oMatrix = np.dot(Q, V.T)
         zeros = np.zeros((oMatrix.shape[1]-len(S),))
-        diagonal = np.concatenate((S, zeros))
+        eigenvalues = np.concatenate((S, zeros))
         
-        self.eigen_vectors = self.extract_eigenvectors(oMatrix, len(diagonal))
-        self.eigen_values = diagonal
-        self.__sort_pairs()
-      
-    
-    def transform(self, data):
-        pass
-       
+        eigen_vectors = []
+        for i in range(len(eigenvalues)):
+            eigen_vectors.append(oMatrix[:,i])
+        self.components = np.array(eigen_vectors)
         
-    def inverse_transform(self, data):
-        pass
+        self.eigen_values = np.array(eigenvalues)
+        super(QRSVDecomposition, self)._sort_pairs()
