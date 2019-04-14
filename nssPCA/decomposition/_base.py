@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 class BaseDecompostion:
-    def __init__(self, axis=0):
+    def __init__(self, axis=1):
         self.axis = axis
         
         self.components = None

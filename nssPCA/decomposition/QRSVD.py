@@ -4,7 +4,7 @@ import numpy as np
 
 class QRSVDecomposition(__BaseDecompostion):
     def fit(self, data):
-        Q, R = np.linalg.qr(data if not self.axis else data.T)
+        Q, R = np.linalg.qr(data if not self.axis else data.T, mode='complete')
         U, S, V = np.linalg.svd(R.T)
         S*=S
         oMatrix = np.dot(Q, V.T)
