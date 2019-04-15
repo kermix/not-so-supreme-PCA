@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+
 
 class BaseDecompostion:
     def __init__(self, axis=1):
@@ -10,13 +10,11 @@ class BaseDecompostion:
         
         self.__number_of_components = None
 
-        
     @property
     def explained_ratio(self):
         sum_of_evals = sum(self.eigen_values)
         return np.array([x/sum_of_evals for x in self.eigen_values])
-    
-    
+
     @explained_ratio.setter
     def explained_ratio(self, arg):
         pass
@@ -41,8 +39,7 @@ class BaseDecompostion:
             
         self.eigen_values = np.array(eigenvalues)
         self.components = np.array(components)
-    
-    
+
     def fit(self, data):
         pass
       
@@ -51,14 +48,9 @@ class BaseDecompostion:
             return np.dot(data, self.components[:self.number_of_components].T)
         else:
             return np.dot(data.T, self.components[:self.number_of_components].T)
-       
-        
+
     def inverse_transform(self, transformed_data):
         if self.axis:
             return np.dot(transformed_data, self.components[:self.number_of_components])
         else:
             return np.dot(transformed_data.T, self.components[:self.number_of_components])
-    
-    
-    #dodać wpływ self.axis na fit/transform/inverse_transform
-    

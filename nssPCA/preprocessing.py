@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 
 class Scaler:
@@ -29,7 +28,7 @@ class Scaler:
             self.std_vector = self.__std(data)
         
         if not self.__inplace: 
-            result = np.full((data.shape), np.nan)
+            result = np.full(data.shape, np.nan)
         
         for index, x in np.ndenumerate(data):
             row_index, column_index = index[0], index[1]
@@ -49,8 +48,7 @@ class Squarer:
     def __init__(self, 
                  axis: int = 0):
         self.axis = axis
-    
-    
+
     def transform(self, 
                   data: np.ndarray):
         if self.axis:
