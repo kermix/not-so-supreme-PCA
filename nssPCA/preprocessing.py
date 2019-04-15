@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 class Scaler:
     def __init__(self, 
                  calc_mean: bool = True,
@@ -12,18 +13,15 @@ class Scaler:
         
         self.mean_vector = None
         self.std_vector = None
-    
-    
+
     @staticmethod
     def __mean(data: np.ndarray):
         return np.mean(data, axis=0)
-    
-    
+
     @staticmethod
     def __std(data: np.ndarray):
         return np.std(data, axis=0)
-     
-        
+
     def transform(self, data: np.ndarray):
         if self.__calc_mean:
             self.mean_vector = self.__mean(data)
