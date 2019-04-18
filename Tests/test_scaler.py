@@ -6,6 +6,54 @@ from nssPCA.preprocessing import Scaler
 
 
 class TestScaler(TestCase):
+    def test_transform_size_plain(self):
+        """
+        Test vectors and matrix with random size and values for size.
+        """
+        for i in range(100):
+            size_x = int(99 * np.random.random() + 1)
+            size_y = int(99 * np.random.random() + 1)
+            dim = round(np.random.random())
+            matrix = np.full((size_x, size_y), np.random.random())
+            transformed = Scaler(False, False, inplace=False, axis=dim).transform(matrix)
+            self.assertEqual(matrix.size, transformed.size)
+
+    def test_transform_size_mean(self):
+        """
+        Test vectors and matrix with random size and values for size.
+        """
+        for i in range(100):
+            size_x = int(99 * np.random.random() + 1)
+            size_y = int(99 * np.random.random() + 1)
+            dim = round(np.random.random())
+            matrix = np.full((size_x, size_y), np.random.random())
+            transformed = Scaler(False, True, inplace=False, axis=dim).transform(matrix)
+            self.assertEqual(matrix.size, transformed.size)
+
+    def test_transform_size_std(self):
+        """
+        Test vectors and matrix with random size and values for size.
+        """
+        for i in range(100):
+            size_x = int(99 * np.random.random() + 1)
+            size_y = int(99 * np.random.random() + 1)
+            dim = round(np.random.random())
+            matrix = np.full((size_x, size_y), np.random.random())
+            transformed = Scaler(True, False, inplace=False, axis=dim).transform(matrix)
+            self.assertEqual(matrix.size, transformed.size)
+
+    def test_transform_size_mean_std(self):
+        """
+        Test vectors and matrix with random size and values for size.
+        """
+        for i in range(100):
+            size_x = int(99 * np.random.random() + 1)
+            size_y = int(99 * np.random.random() + 1)
+            dim = round(np.random.random())
+            matrix = np.full((size_x, size_y), np.random.random())
+            transformed = Scaler(True, True, inplace=False, axis=dim).transform(matrix)
+            self.assertEqual(matrix.size, transformed.size)
+
     def test_transform_vec_plain(self):
         """
         Test vectors with random size and values with no transformation.

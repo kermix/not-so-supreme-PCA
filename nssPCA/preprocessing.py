@@ -35,7 +35,7 @@ class Scaler:
         if self.__axis == 0:
             for i in range(result.shape[1]):
                 u = self.mean_vector[i] if self.__calc_mean else 0
-                s = self.std_vector[i] if self.__calc_std else 1
+                s = self.std_vector[i] if (self.__calc_std and self.std_vector[i] != 0) else 1
 
                 if self.__inplace:
                     data[:, i] = (data[:, i] - u) / s
@@ -44,7 +44,7 @@ class Scaler:
         else:
             for j in range(result.shape[0]):
                 u = self.mean_vector[j] if self.__calc_mean else 0
-                s = self.std_vector[j] if self.__calc_std else 1
+                s = self.std_vector[j] if (self.__calc_std and self.std_vector[j] != 0) else 1
 
                 if self.__inplace:
                     data[j] = (data[j] - u) / s
