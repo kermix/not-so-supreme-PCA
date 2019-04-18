@@ -13,7 +13,7 @@ class TestScaler(TestCase):
         for i in range(100):
             size_x = int(99 * np.random.random() + 1)
             size_y = int(99 * np.random.random() + 1)
-            dim = round(np.random.random())
+            dim = np.random.randint(0, 1)
             matrix = np.full((size_x, size_y), np.random.random())
             transformed = Scaler(False, False, inplace=False, axis=dim).transform(matrix)
             self.assertEqual(matrix.size, transformed.size)
@@ -25,7 +25,7 @@ class TestScaler(TestCase):
         for i in range(100):
             size_x = int(99 * np.random.random() + 1)
             size_y = int(99 * np.random.random() + 1)
-            dim = round(np.random.random())
+            dim = np.random.randint(0, 1)
             matrix = np.full((size_x, size_y), np.random.random())
             transformed = Scaler(False, True, inplace=False, axis=dim).transform(matrix)
             self.assertEqual(matrix.size, transformed.size)
@@ -37,7 +37,7 @@ class TestScaler(TestCase):
         for i in range(100):
             size_x = int(99 * np.random.random() + 1)
             size_y = int(99 * np.random.random() + 1)
-            dim = round(np.random.random())
+            dim = np.random.randint(0, 1)
             matrix = np.full((size_x, size_y), np.random.random())
             transformed = Scaler(True, False, inplace=False, axis=dim).transform(matrix)
             self.assertEqual(matrix.size, transformed.size)
@@ -49,7 +49,7 @@ class TestScaler(TestCase):
         for i in range(100):
             size_x = int(99 * np.random.random() + 1)
             size_y = int(99 * np.random.random() + 1)
-            dim = round(np.random.random())
+            dim = np.random.randint(0, 1)
             matrix = np.full((size_x, size_y), np.random.random())
             transformed = Scaler(True, True, inplace=False, axis=dim).transform(matrix)
             self.assertEqual(matrix.size, transformed.size)
