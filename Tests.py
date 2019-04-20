@@ -9,11 +9,33 @@ no_answers = ['N', 'n']
 
 answers = yes_answers + no_answers
 
-# file_name = input("Proszę podać ścieżkę do pliku")
+file_name = input("Proszę podać ścieżkę do pliku")
 
-file_name = '/home/mateusz/Pobrane/iris.csv'
+index_col = input("Podaj nazwę kolumny z indeksami wierszy: [Protein IDs] ")
+index_col = index_col or "Protein IDs"
 
-matrix = data.Holder(file_name, nrows=10)
+# file_name = '/home/mateusz/Pobrane/iris.csv'
+
+matrix = data.Holder(file_name, index_col=index_col)
+
+print("Wybór nazw kolumn zawierających dane do analizy: ")
+print("\t 1. Intensity")
+print("\t 2. Concentration")
+print("\t 3. Własne wyrażenie regularne.")
+
+filters = {"1": "^Intensity",
+           "2": "^Concentration",
+           "3": None}
+
+choice = input("Twórj wybór: ")
+
+while choice not in filters.keys():
+    choice = input("Twój wybór: ")
+
+if choice == "3":
+    filters[choice] = input("Podaj wyrażenie regularne:").strip()
+
+matrix.data = matrix.data.filter(regex=filters[choice])
 
 center_data = input("Czy przeprowadzić centrowanie danych względem średniej? [T/n]").strip()
 

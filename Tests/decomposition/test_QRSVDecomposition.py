@@ -2,4 +2,5 @@ from unittest import TestCase
 
 
 class TestQRSVDecomposition(TestCase):
-    pass
+    def test_fit(self):
+        self.fail()

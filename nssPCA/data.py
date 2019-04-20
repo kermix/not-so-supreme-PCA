@@ -20,8 +20,8 @@ class Holder:
             if extension in _read_methods.keys():
                 self.data = _read_methods[extension](file_name, **kwargs)
             else:
-                raise IOError("Bad file extension: {}. Suppored file extensions are {}".format(extension,
-                                                                                               _read_methods.keys()))
+                raise IOError("Bad file extension: {}. Supported file extensions are {}".format(extension,
+                                                                                                _read_methods.keys()))
         else:
             raise IOError("File not found")
 
