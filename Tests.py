@@ -1,3 +1,5 @@
+import pandas as pd
+
 import nssPCA.data as data
 import nssPCA.decomposition as decomposition
 import nssPCA.preprocessing as preprocessing
@@ -71,11 +73,11 @@ while algorithm not in valid_algorithms.keys():
 center_data = True if center_data in yes_answers else False
 standarize_data = True if standarize_data in yes_answers else False  # TODO: rename
 
-matrix = matrix.generate()
+matrix_data = matrix.generate()
 
 standarized_matrix = preprocessing.Scaler(calc_mean=center_data,
                                           calc_std=standarize_data,
-                                          axis=0 if dimm_to_compress == 1 else 1).transform(matrix)
+                                          axis=0 if dimm_to_compress == 1 else 1).transform(matrix_data)
 
 if algorithm == 'eig':
     cov_matrix = preprocessing.covariance(standarized_matrix, axis=dimm_to_compress)
@@ -102,6 +104,8 @@ elif algorithm == 'svd':
     PCA.number_of_components = int(n_components)
     transformed = PCA.transform(standarized_matrix)
 
-import numpy as np
+result = pd.DataFrame(transformed,
+                      index=matrix.data.index if dimm_to_compress else matrix.data.columns,
+                      columns=["".join(("PC", str(i))) for i in range(int(n_components))])
 
-np.savetxt("data.csv", transformed, delimiter=",")
+result.to_excel("result.xlsx")
