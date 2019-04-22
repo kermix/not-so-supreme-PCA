@@ -48,8 +48,8 @@ standarize_data = input("Czy przeskalować dane tak, aby wariancja w kolumnach w
 while standarize_data not in answers:
     standarize_data = input("Czy przeskalować dane tak, aby wariancja w kolumnach wnosiła 1?").strip()
 
-print("Indeksy wymiaru 0: {:<50}...".format(str(matrix.data.index.values)))  # TODO: do poprawy matrix.data
-print("Indeksy wymiaru 1: {:<50}...".format(str(matrix.data.columns)))  # TODO: poprawy matrix.data
+print("Indeksy wymiaru 0: {}...".format(str(list(matrix.data.index.values))[:50]))  # TODO: do poprawy matrix.data
+print("Indeksy wymiaru 1: {}...".format(str(list(matrix.data.columns))[:50]))  # TODO: poprawy matrix.data
 
 dimm_to_compress = input("Który z wymiarów poddać kompresji?").strip()
 while dimm_to_compress not in ["0", "1"]:
@@ -83,29 +83,20 @@ if algorithm == 'eig':
     cov_matrix = preprocessing.covariance(standarized_matrix, axis=dimm_to_compress)
     PCA = decomposition.EigenDecomposition(axis=dimm_to_compress)
     PCA.fit(cov_matrix)
-    print("Ilość wyjaśnianej wariancji przez kolejne zmienne {}".format(PCA.explained_ratio))
-    n_components = input("Ilu głównych składowych użyć do rzutowania?")  # TODO: co to ma byc?
-    PCA.number_of_components = int(n_components)
-    transformed = PCA.transform(standarized_matrix)
 elif algorithm == 'svd':
     PCA = decomposition.SVDecomposition(axis=dimm_to_compress)
     PCA.fit(standarized_matrix)
-    print("Ilość wyjaśnianej wariancji przez kolejne zmienne {}".format(PCA.explained_ratio))
-    n_components = input("Ilu głównych składowych użyć do rzutowania?")  # TODO: co to ma byc?
-    n_components = input("Ilu głównych składowych użyć do rzutowania?")  # TODO: co to ma byc?
-    PCA.number_of_components = int(n_components)
-    transformed = PCA.transform(standarized_matrix)
 elif algorithm == 'svd':
     PCA = decomposition.QRSVDecomposition(axis=dimm_to_compress)
     PCA.fit(standarized_matrix)
-    print("Ilość wyjaśnianej wariancji przez kolejne zmienne {}".format(PCA.explained_ratio))
-    n_components = input("Ilu głównych składowych użyć do rzutowania?")  # TODO: co to ma byc?
-    n_components = input("Ilu głównych składowych użyć do rzutowania?")  # TODO: co to ma byc?
-    PCA.number_of_components = int(n_components)
-    transformed = PCA.transform(standarized_matrix)
+
+print("Ilość wyjaśnianej wariancji przez kolejne zmienne {}".format(PCA.explained_ratio))
+n_components = input("Ilu głównych składowych użyć do rzutowania?")  # TODO: co to ma byc?
+PCA.number_of_components = int(n_components)
+transformed = PCA.transform(standarized_matrix)
 
 result = pd.DataFrame(transformed,
                       index=matrix.data.index if dimm_to_compress else matrix.data.columns,
-                      columns=["".join(("PC", str(i))) for i in range(int(n_components))])
+                      columns=["".join(("PC", str(i + 1))) for i in range(int(n_components))])
 
 result.to_excel("result.xlsx")
