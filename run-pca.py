@@ -86,7 +86,7 @@ if algorithm == 'eig':
 elif algorithm == 'svd':
     PCA = decomposition.SVDecomposition(axis=dimm_to_compress)
     PCA.fit(standarized_matrix)
-elif algorithm == 'svd':
+elif algorithm == 'qrsvd':
     PCA = decomposition.QRSVDecomposition(axis=dimm_to_compress)
     PCA.fit(standarized_matrix)
 

@@ -50,7 +50,17 @@ def update_graph(selected1, selected2):
 
     return {
         "data": trace,
-        "layout": go.Layout(height=800, yaxis=dict(scaleanchor="x", scaleratio=1))
+        "layout": go.Layout(height=800,
+
+                            xaxis={
+                                "title": selected1,
+
+                            },
+                            yaxis={
+                                "title": selected2,
+                                "scaleratio": 1,
+                                "scaleanchor": 'x'
+                            })
     }
 
 
