@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 
 from nssPCA.data import Holder
 
-result = Holder("/home/mateusz/PycharmProjects/not-so-supreme-PCA/result.xlsx", index_col="Protein IDs").data
+result = Holder("/home/mateusz/PycharmProjects/not-so-supreme-PCA/result.xlsx", index_col=0).data
 
 app = dash.Dash(__name__)
 

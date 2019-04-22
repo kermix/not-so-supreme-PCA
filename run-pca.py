@@ -13,7 +13,9 @@ answers = yes_answers + no_answers
 
 file_name = input("Proszę podać ścieżkę do pliku: [data.xlsx] ").strip() or "data.xlsx"
 
-index_col = input("Podaj nazwę kolumny z indeksami wierszy: [Protein IDs] ").strip() or "Protein IDs"
+index_col = input("Podaj nazwę kolumny z indeksami wierszy lub \"*\", "
+                  "aby użyć domyślnych indeksów: [Protein IDs] ").strip() or "Protein IDs"
+index_col = None if index_col == "*" else index_col
 
 # file_name = '/home/mateusz/Pobrane/iris.csv'
 
