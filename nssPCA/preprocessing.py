@@ -11,12 +11,12 @@ class Scaler:
                  axis: int = 0):
         """
 
-        Initalizes and configures object to standarize data.
+        Initializes and configures object to Z-normalize data.
 
         :param calc_mean: (bool) True to calculate mean vector of data. If False mean is set to 0.
         :param calc_std: (bool)  True to calculate standard deviation of data. If False standard deviation is set to 1
-        :param inplace: (bool)  False to create new object with standarized data.
-        :param axis: (int)      Axis to standarize over.
+        :param inplace: (bool)  False to create new object with standardized data.
+        :param axis: (int)      Axis to standardized over.
 
         """
         self.__calc_mean = calc_mean
@@ -124,10 +124,12 @@ def covariance(data: np.ndarray, axis: int = 0, biased: bool = True) -> np.ndarr
     Calculates covariance matrix of data. For n x p matrix if axis == 0 result is n x n else p x p.
 
     :param data: (np.ndarray) Data to calculate covariance matrix.
-    :param axis: (int) Axis to calulacte covariance matrix over.
+    :param axis: (int) Axis to calculate covariance matrix over.
     :param biased: (bool) Use Bessel's correction. (A*A^T)/(N-1) instead (A*A^T)/N.
 
     :return: (np.ndarray) Covariance matrix.
 
     """
     return Squarer(axis=axis).transform(data) / (data.shape[axis] - (1 if biased else 0))
+
+# TODO: add calculating covariance matrix as part of eigen decomposition fitting
