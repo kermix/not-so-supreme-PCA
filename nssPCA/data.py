@@ -11,7 +11,24 @@ _read_methods = {
 
 
 class Holder:
-    def __init__(self, file_name, **kwargs):
+    """
+
+    Container for a data
+
+    """
+
+    def __init__(self, file_name: str, **kwargs):
+
+        """
+
+        Initiates object containing data as pandas.DataFrame. Gets the same arguments like pandas.read_csv and
+        pandas.read_xlsx.Uses proper function depending on file extension.
+
+        :param file_name: (string) Absolute file directory.
+        :param kwargs: keyworded arguments compatible with pandas read functions.
+
+        """
+
         file_name = file_name.strip()
 
         if os.path.exists(os.path.dirname(file_name)):
@@ -25,5 +42,14 @@ class Holder:
         else:
             raise IOError("File not found")
 
-    def generate(self):
+    def generate(self) -> np.ndarray:
+        """
+
+        Extracts numeric data from data frame.
+
+        :return: (numpy.ndarray) numeric data from DataFrame
+
+        """
         return self.data.select_dtypes(include=[np.number]).values
+
+# TODO: move to functions
