@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 import nssPCA.data as data
@@ -30,10 +31,10 @@ filters = {"1": "^Intensity",
            "2": "^Concentration",
            "3": None}
 
-choice = input("Twórj wybór: [1] ").strip() or "1"
+choice = input("Twój wybór: [1] ").strip() or "1"
 
 while choice not in filters.keys():
-    choice = input("Twórj wybór: [1] ").strip() or "1"
+    choice = input("Twój wybór: [1] ").strip() or "1"
 
 if choice == "3":
     filters[choice] = input("Podaj wyrażenie regularne: [.*]").strip() or ".*"
@@ -91,7 +92,9 @@ elif algorithm == 'qrsvd':
     PCA = decomposition.QRSVDecomposition(axis=dimm_to_compress)
     PCA.fit(standarized_matrix)
 
-print("Ilość wyjaśnianej wariancji przez kolejne zmienne {}".format(PCA.explained_ratio))
+with np.printoptions(precision=5, suppress=True):
+    print("Ilość wyjaśnianej wariancji przez kolejne zmienne {}".format(PCA.explained_ratio))
+
 n_components = input("Ilu głównych składowych użyć do rzutowania? [{}]".format(len(PCA.components))) \
                or str(len(PCA.components))  # TODO: co to ma byc?
 PCA.number_of_components = int(n_components)
