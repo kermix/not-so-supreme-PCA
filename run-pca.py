@@ -27,8 +27,8 @@ print("\t 1. Intensity")
 print("\t 2. Concentration")
 print("\t 3. Własne wyrażenie regularne.")
 
-filters = {"1": "^Intensity(?:\s(?:P|F)\d){2}$",
-           "2": "^Concentration(?:\s(?:P|F)\d){2}$",
+filters = {"1": r"^Intensity(?:\s(?:P|F)\d){2}$",
+           "2": r"^Concentration(?:\s(?:P|F)\d){2}$",
            "3": None}
 
 choice = input("Twój wybór: [1] ").strip() or "1"

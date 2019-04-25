@@ -29,10 +29,10 @@ class EigenDecomposition(__BaseDecompostion):
         super(EigenDecomposition, self)._sort_pairs()
 
 
-def check_symmetric(data: np.ndarray, tol: float = 1e-8):
+def check_symmetric(data: np.ndarray, tol: float = 1e-8) -> bool:
     """
     Checks if matrix is symmetric by comparing values of A and A.T matrix.
-
+    
     :param data: (np.ndarray) Data to test for symmetricity.
     :param tol: (float) tolerance for comaring values.
     :return: (bool) True if matrix is symmetric.

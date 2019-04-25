@@ -51,11 +51,9 @@ class BaseDecompostion:
         Sorts eigenvalues with corresponding eigenvectors in decreasing order of eigenvalues.
         """
 
-        # create pairs of eigenvalue and corresponding eigenvalue
-        eigenpairs = zip(self.eigen_values, self.components)
-
-        # sort pairs in decreasing order of eigen values
-        eigenpairs.sort(key=lambda eigpair: eigpair[0], reverse=True)
+        # create pairs of eigenvalue and corresponding eigenvalue and sort in decreasing order of eigen values
+        eigenpairs = sorted(zip(self.eigen_values, self.components),
+                            key=lambda eigpair: eigpair[0], reverse=True)
 
         # split pairs to eigenvalues and eigenvectors
         eigenvalues, components = [], []

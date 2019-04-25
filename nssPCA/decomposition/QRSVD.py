@@ -14,19 +14,19 @@ class QRSVDecomposition(__BaseDecompostion):
         :param data: (np.ndarray) Matrix to decomposition.
         """
         # perform decomposition
-        Q, R = np.linalg.qr(data if not self.axis else data.T, mode='complete')
-        U, S, V = np.linalg.svd(R.T)
+        q, r = np.linalg.qr(data if not self.axis else data.T, mode='complete')
+        u, s, v = np.linalg.svd(r.T)
 
         # s is singular values which is square root of eigenvalue.
-        S *= S
+        s *= s
 
         # generate ortogonal matrix according to article
-        orthogonal_matrix = np.dot(Q, V.T)
+        orthogonal_matrix = np.dot(q, v.T)
 
         # svd returns only non-zero singular values so we have to add missing values corresponding
         # to number of eigen vectors
-        zeros = np.zeros((orthogonal_matrix.shape[1] - len(S),))
-        eigenvalues = np.concatenate((S, zeros))
+        zeros = np.zeros((orthogonal_matrix.shape[1] - len(s),))
+        eigenvalues = np.concatenate((s, zeros))
 
         # extract eigen vectors from orthogonal matrix TODO: move to method of BaseDecompostion class
         eigen_vectors = []
