@@ -10,46 +10,49 @@ _read_methods = {
 }
 
 
-class Holder:
+def read_data(file_name: str, buffer=None, **kwargs) -> pd.DataFrame:
     """
 
-    Container for a data
+    Reads data from buffer or fileas pandas.DataFrame. Gets the same arguments like pandas.read_csv and
+    pandas.read_xlsx.Uses proper function depending on file extension.
+
+    :param file_name: (string) Absolute file directory.
+    :param buffer: ioBuffer of file to load
+    :param kwargs: keyworded arguments compatible with pandas read functions.
+
+    :return: (pd.DataFrame) Pandas DataFrame with data from buffer or file.
+
+
 
     """
 
-    def __init__(self, file_name: str, **kwargs):
+    file_name = file_name.strip()
 
-        """
+    extension = file_name.split('.')[-1].lower()
 
-        Initiates object containing data as pandas.DataFrame. Gets the same arguments like pandas.read_csv and
-        pandas.read_xlsx.Uses proper function depending on file extension.
-
-        :param file_name: (string) Absolute file directory.
-        :param kwargs: keyworded arguments compatible with pandas read functions.
-
-        """
-
-        file_name = file_name.strip()
-
-        if os.path.exists(os.path.dirname(file_name)):
-            extension = file_name.split('.')[-1].lower()
-
-            if extension in _read_methods.keys():
-                self.data = _read_methods[extension](file_name, **kwargs)
+    if extension in _read_methods.keys():
+        if not buffer:
+            if os.path.exists(os.path.dirname(file_name)):
+                data = _read_methods[extension](file_name, **kwargs)
             else:
-                raise IOError("Bad file extension: {}. Supported file extensions are {}".format(extension,
-                                                                                                _read_methods.keys()))
+                raise IOError("File not found")
         else:
-            raise IOError("File not found")
+            data = _read_methods[extension](buffer, **kwargs)
+    else:
+        raise IOError("Bad file extension: {}. Supported file extensions are {}".format(extension,
+                                                                                        _read_methods.keys()))
 
-    def generate(self) -> np.ndarray:
-        """
+    return data
 
-        Extracts numeric data from data frame.
 
-        :return: (numpy.ndarray) numeric data from DataFrame
+def generate(data) -> np.ndarray:
+    """
 
-        """
-        return self.data.select_dtypes(include=[np.number]).values
+    Extracts numeric data from data frame.
+
+    :return: (numpy.ndarray) numeric data from DataFrame
+
+    """
+    return data.select_dtypes(include=[np.number]).values
 
 # TODO: move to functions
