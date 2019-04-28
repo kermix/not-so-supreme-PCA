@@ -1,53 +1,71 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
-import pandas as pd
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 from nssPCA.data import read_data
 from .server import app
 
+# TODO: dcc.Upload for creating temp file, and reading this file using read_data().
+
 FILENAME = "/home/mateusz/data.xlsx"
 
-original_data = read_data(FILENAME)
-
-data = original_data.copy()
-
 layout = html.Div([
+    dcc.ConfirmDialog(
+        id='exception'
+    ),
     html.Div([
-        html.H2("Configuration"),
-        html.Hr(),
+        html.H5("Set the data:"),
         html.Div([
-            html.Span("Choose columns to analyze", style={"padding": 10, "text-align": "right"}),
+            html.Span("1. Choose columns to analyze:", style={"padding": 10, "text-align": "right"}),
             html.Div(dcc.Dropdown(id="columns",
-                                  options=[{'label': column, 'value': column} for column in original_data.columns],
+                                  options=[{'label': column, 'value': column}
+                                           for column in app.context.original_data.columns],
                                   value="",
                                   clearable=True,
                                   multi=True
                                   ), style={"margin": 0})]),
-        html.Hr(),
         html.Div([
-            html.Span("Choose index column", style={"padding": 10, "text-align": "right"}),
+            html.Span("2. Choose index column:", style={"padding": 10, "text-align": "right"}),
             html.Div(dcc.Dropdown(id="index-column",
-                                  options=[{'label': column, 'value': column} for column in original_data.columns],
+                                  options=[{'label': column, 'value': column}
+                                           for column in app.context.original_data.columns],
                                   value=""
                                   ), style={"margin": 0})]),
-        html.Div(id='columns-intermediate', style={'display': 'none'})
+        html.Br(),
+        html.Button(id='load-button', n_clicks=0, children='Submit')
     ], className="two columns"),
     html.Div([
+        dcc.Upload(
+            id='upload-data',
+            children=html.Div([
+                'Upload comma separated value file or Microsoft Excel spreadsheet. ',
+                html.A('Select File')
+            ]),
+            style={
+                'width': '100%',
+                'height': '60px',
+                'lineHeight': '60px',
+                'borderWidth': '1px',
+                'borderStyle': 'dashed',
+                'borderRadius': '5px',
+                'textAlign': 'center',
+                'margin': '10px 0'
+            }
+        ),
         dash_table.DataTable(
             id='datatable-paging',
-            data=data.to_dict('rows'),
-            columns=[{'name': i, 'id': i} for i in data.columns],
+            data=app.context.data.to_dict('rows'),
+            columns=[{'name': i, 'id': i} for i in app.context.data.columns],
             style_table={
-                'height': '670px',
+                'height': '645px',
                 'overflowY': 'scroll',
                 'border': 'thin lightgrey solid'
             },
             pagination_mode="be",
             pagination_settings={
                 "current_page": 0,
-                "page_size": 25,
+                "page_size": 20,
             },
         )
     ], className="ten columns"),
@@ -56,27 +74,51 @@ layout = html.Div([
 
 @app.callback([
     Output('datatable-paging', 'data'),
-    Output('datatable-paging', 'columns')],
-    [Input('datatable-paging', 'pagination_settings'),
-     Input('columns-intermediate', 'children'),
-     Input("index-column", "value")])
-def select_columns(pagination_settings, filtered_data, index_column):
-    data = pd.read_json(filtered_data)
+    Output('datatable-paging', 'columns'),
+    Output('columns', 'options'),
+    Output('index-column', 'options')],
+    [Input('load-button', 'n_clicks'),
+     Input('tabs', 'value'),
+     Input('datatable-paging', 'pagination_settings')],
+    [State("index-column", "value"),
+     State('columns', 'value')])
+def update_data(_n_clicks, tab, pagination_settings, index_column, columns):
+    if tab in ["import"]:
+        app.context.data = app.context.original_data.copy()
 
-    if index_column:
-        data = data.set_index(index_column)
-    else:
-        data = data.reindex(index=range(data.shape[0]))
+        if not columns:
+            columns = [column for column in app.context.original_data.columns]
+        app.context.data = app.context.original_data.filter(items=columns, axis=1)
 
-    return data.iloc[
-           pagination_settings['current_page'] * pagination_settings['page_size']:
-           (pagination_settings['current_page'] + 1) * pagination_settings['page_size']
-           ].to_dict('rows'), [{'name': i, 'id': i} for i in data.columns]
+        if index_column:
+            app.context.data = app.context.data.set_index(index_column)
+        else:
+            app.context.data = app.context.data.reindex(index=range(app.context.data.shape[0]))
+
+        columns = [{'label': column, 'value': column} for column in app.context.original_data.columns]
+
+    page_data = app.context.data.iloc[
+                pagination_settings['current_page'] * pagination_settings['page_size']:
+                (pagination_settings['current_page'] + 1) * pagination_settings['page_size']
+                ].to_dict('rows')
+    page_columns = [{'name': i, 'id': i} for i in app.context.data.columns]
+
+    return page_data, page_columns, columns, columns
 
 
-@app.callback(Output('columns-intermediate', 'children'), [Input('columns', 'value')])
-def clean_data(value):
-    if not value:
-        value = [column for column in original_data.columns]
-    df = original_data.filter(items=value, axis=1)
-    return df.to_json()
+@app.callback([Output('load-button', 'n_clicks'),
+               Output('exception', 'message'),
+               Output('exception', 'displayed')],
+              [Input('upload-data', 'contents')],
+              [State('upload-data', 'filename'),
+               State('load-button', 'n_clicks'),
+               State('tabs', 'value')])
+def parse_contents(contents, filename, n_clicks, tab):
+    if tab == 'import' and contents is not None:
+        content_type, content_string = contents.split(',')
+        try:
+            app.context.original_data = read_data(file_name=filename, buffer=content_string)
+        except Exception as e:
+            return n_clicks, e, True
+
+    return n_clicks + 1, '', False
