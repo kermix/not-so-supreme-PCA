@@ -12,10 +12,10 @@ class BaseDecompostion:
 
         """
         self.axis = axis
-        
+
         self.components = None
         self.eigen_values = None
-        
+
         self.__number_of_components = None
 
     @property
@@ -28,15 +28,26 @@ class BaseDecompostion:
 
         """
         sum_of_evals = sum(self.eigen_values)
-        return np.array([x/sum_of_evals for x in self.eigen_values])
-    
+        return np.round(np.array([x / sum_of_evals for x in self.eigen_values]), 3)
+
+    @property
+    def explained_ratio_cumulative(self) -> np.ndarray:
+        """
+
+        Calculates cumulative explained variance. I-th value of array is sum of value explained by i first PCs.
+
+        :return: (np.ndarray) Cumulative explained variance
+
+        """
+        return np.cumsum(self.explained_ratio)
+
     @property
     def number_of_components(self) -> int:
         """
         :return: (int) Actual number of PCs to use for PCA.
         """
         return self.__number_of_components
-    
+
     @number_of_components.setter
     def number_of_components(self, value: int):
         """
@@ -45,7 +56,7 @@ class BaseDecompostion:
         explaining over 90% of variance in data set.
         """
         self.__number_of_components = value
-    
+
     def _sort_pairs(self):
         """
         Sorts eigenvalues with corresponding eigenvectors in decreasing order of eigenvalues.
@@ -57,11 +68,11 @@ class BaseDecompostion:
 
         # split pairs to eigenvalues and eigenvectors
         eigenvalues, components = [], []
-        
+
         for eigenpair in eigenpairs:
             eigenvalues.append(eigenpair[0])
             components.append(np.array(eigenpair[1]))
-            
+
         self.eigen_values = np.array(eigenvalues)
         self.components = np.array(components)
 
