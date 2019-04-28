@@ -33,5 +33,6 @@ server = Flask(__name__)
 app = Dash(__name__, server=server)
 
 app.config.suppress_callback_exceptions = True
+app.scripts.config.serve_locally = True
 
 app.context = Context()
