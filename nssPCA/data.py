@@ -1,3 +1,5 @@
+import base64
+import io
 import os
 
 import numpy as np
@@ -37,10 +39,15 @@ def read_data(file_name: str, buffer=None, **kwargs) -> pd.DataFrame:
             else:
                 raise IOError("File not found")
         else:
+            decoded = base64.b64decode(buffer)
+            if 'csv' == extension:
+                buffer = io.StringIO(decoded.decode('utf-8'))
+            elif extension in ['xls', 'xlsx']:
+                buffer = io.BytesIO(decoded)
             data = _read_methods[extension](buffer, **kwargs)
     else:
-        raise IOError("Bad file extension: {}. Supported file extensions are {}".format(extension,
-                                                                                        _read_methods.keys()))
+        raise IOError("Bad file extension: {}. Supported file extensions are {}. ".format(extension,
+                                                                                          _read_methods.keys()))
 
     return data
 
