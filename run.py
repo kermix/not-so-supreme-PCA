@@ -28,10 +28,14 @@ if __name__ == '__main__':
     qtapp = QApplication(sys.argv)
 
     web = QWebEngineView()
+
+    web.setWindowTitle("Not so supreme PCA")
+    web.setWindowIcon(QIcon('icon.png'))
     web.setContextMenuPolicy(Qt.PreventContextMenu)
     web.page().profile().downloadRequested.connect(_downloadRequested)
+
     web.load(QUrl("http://127.0.0.1:8050"))
-    web.show()
+    web.showMaximized()
 
     sys.exit(qtapp.exec_())
 

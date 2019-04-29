@@ -47,11 +47,11 @@ layout = html.Div([
             ))]),
         html.Hr(),
 
-        html.H5("Transormation ln(x)"),
-        html.H5("Constant columns removing"),
-        html.H5("Cooperating with NaNs: remove col/row or insert mean"),
-        html.H5("Grouping data for mean/median"),
-        html.Hr(),
+        # html.H5("Transormation ln(x)"),
+        # html.H5("Constant columns removing"),
+        # html.H5("Cooperating with NaNs: remove col/row or insert mean"),
+        # html.H5("Grouping data for mean/median"),
+        # html.Hr(),
         html.Button(id='preprocessing-button', n_clicks=0, children='Submit')
     ], className="two columns"),
     html.Div([
