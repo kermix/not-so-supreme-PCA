@@ -9,15 +9,15 @@ from PyQt5.QtWidgets import QApplication
 from webgui.home import app
 
 
-def run_app(app_port=8050):
+def run_app(app_port=8050, debugging=False):
     app.run_server(port=app_port,
-                   debug=False)
+                   debug=debugging)
 
 
 if __name__ == '__main__':
     port = 8050
 
-    threading.Thread(target=run_app, args=(port,), daemon=False).start()
+    threading.Thread(target=run_app, args=(port, False), daemon=False).start()
 
 
     def _downloadRequested(item):  # QWebEngineDownloadItem
@@ -34,3 +34,5 @@ if __name__ == '__main__':
     web.show()
 
     sys.exit(qtapp.exec_())
+
+    # run_app(debugging=True)

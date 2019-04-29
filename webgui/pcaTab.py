@@ -27,15 +27,14 @@ layout = html.Div([
         html.Hr(),
         html.H5("Transform the data:"),
         html.Span("2. Choose number of PC used to analysis", style={"padding": 10, "text-align": "right"}),
-        dcc.Slider(
+        dcc.Input(
             id='no-pcs-slider',
+            inputmode='numeric',
+            type='number',
             min=1,
             max=1,
             step=1,
             value=1,
-            marks={
-                1: '1',
-            },
         ),
         html.Br(),
         html.Button(id='pca-transform-button', n_clicks=0, children='Transform'),
@@ -51,8 +50,7 @@ layout = html.Div([
 
 
 @app.callback([Output('explainded-variance-graph', 'figure'),
-               Output('no-pcs-slider', 'max'),
-               Output('no-pcs-slider', 'marks')],
+               Output('no-pcs-slider', 'max')],
               [Input('pca-fit-button', 'n_clicks'),
                Input('tabs', 'value')],
               [State('radio-algorithm', 'value')])
@@ -108,7 +106,7 @@ def fit_data(_n_clicks, tab, algorithm):
                            )
                        ])
                    ))
-           }, max_no_pcs, {i: str(i) for i in range(1, max_no_pcs + 1)}
+           }, max_no_pcs
 
 
 @app.callback([Output("xaxis", "options"),
@@ -121,7 +119,7 @@ def transform_data(_n_clicks, no_pcs):
         transformed_data = app.context.PCA.transform(app.context.normalized_data)
 
         app.context.transformed_data = pd.DataFrame(transformed_data,
-                                                    index=app.context.data.index if app.context.axis else app.context.data.columns,
+                                                    index=app.context.normalized_data.index if app.context.axis else app.context.normalized_data.columns,
                                                     columns=["".join(("PC", str(i))) for i in
                                                              range(1, int(no_pcs) + 1)])
 
