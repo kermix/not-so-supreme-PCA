@@ -60,6 +60,6 @@ def generate(data) -> np.ndarray:
     :return: (numpy.ndarray) numeric data from DataFrame
 
     """
-    return data.select_dtypes(include=[np.number]).values
+    return data.apply(pd.to_numeric, errors='coerce')
 
 # TODO: move to functions

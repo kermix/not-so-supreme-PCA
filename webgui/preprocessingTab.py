@@ -1,7 +1,6 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
-import numpy as np
 import pandas as pd
 from dash.dependencies import Input, Output, State
 
@@ -57,8 +56,6 @@ layout = html.Div([
     html.Div([
         dash_table.DataTable(
             id='preprocessing-datatable-paging',
-            data=app.context.normalized_data.to_dict('rows'),
-            columns=[{'name': i, 'id': i} for i in app.context.normalized_data.columns],
             style_table={
                 'height': '645px',
                 'overflowY': 'scroll',
@@ -85,8 +82,6 @@ layout = html.Div([
      State("radio-std", "value")])
 def preprocess_data(pagination_settings, tab, _n_clicks, dimension, mean, std):
     if tab in ["pre"]:
-        app.context.normalized_data = app.context.data.copy()
-
         app.context.axis = int(dimension)
 
         app.context.calc_mean = False if mean == "False" else True
@@ -99,20 +94,20 @@ def preprocess_data(pagination_settings, tab, _n_clicks, dimension, mean, std):
             calc_std=app.context.calc_std,
             axis=(0 if app.context.axis == 1 else 1))
 
-        normalized = app.context.scaler.transform(matrix)
+        normalized = app.context.scaler.transform(matrix.values)
 
         app.context.normalized_data = pd.DataFrame(normalized,
-                                                   index=app.context.data.select_dtypes(include=[np.number]).index,
-                                                   columns=app.context.data.select_dtypes(include=[np.number]).columns)
+                                                   index=matrix.index,
+                                                   columns=matrix.columns)
+        if not app.context.normalized_data.empty:
+            page_data = app.context.normalized_data.iloc[
+                        pagination_settings['current_page'] * pagination_settings['page_size']:
+                        (pagination_settings['current_page'] + 1) * pagination_settings['page_size']
+                        ].to_dict('rows')
 
-    page_data = app.context.normalized_data.iloc[
-                pagination_settings['current_page'] * pagination_settings['page_size']:
-                (pagination_settings['current_page'] + 1) * pagination_settings['page_size']
-                ].to_dict('rows')
+            page_columns = [{'name': i, 'id': i} for i in app.context.normalized_data.columns]
 
-    page_columns = [{'name': i, 'id': i} for i in app.context.normalized_data.columns]
-
-    return page_data, page_columns
+        return page_data, page_columns
 
 
 @app.callback(Output("radio-dimensions", "options"),

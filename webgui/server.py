@@ -8,13 +8,14 @@ from flask import Flask
 class Context:
     def __init__(self):
         import pandas as pd
+        from nssPCA.data import generate
 
         self.raw_data = ""
 
         self.original_data = pd.DataFrame()
         self.data = self.original_data.copy()
 
-        self.normalized_data = self.data.copy()
+        self.normalized_data = generate(self.data)
 
         self.covariance_matix = None
 
@@ -33,6 +34,7 @@ server = Flask(__name__)
 app = Dash(__name__, server=server)
 
 app.config.suppress_callback_exceptions = True
+app.css.config.serve_locally = True
 app.scripts.config.serve_locally = True
 
 app.context = Context()
