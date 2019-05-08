@@ -175,8 +175,9 @@ def eigenvalues_download_link(tab):
 def eigenvectors_download_link(tab):
     csv_string = "data:text/csv;charset=utf-8,"
     if tab == 'export' and app.context.PCA:
-        columns = ["".join(("PC", str(i))) for i in range(1, int(len(app.context.PCA.components)) + 1)]
-        data = pd.DataFrame(app.context.PCA.components, index=columns).to_csv(encoding='utf-8')
+        columns = app.context.normalized_data.columns
+        index = ["".join(("PC", str(i))) for i in range(1, int(len(app.context.PCA.components)) + 1)]
+        data = pd.DataFrame(app.context.PCA.components, index=index, columns=columns).to_csv(encoding='utf-8')
         csv_string += urllib.parse.quote(data)
     return csv_string
 
