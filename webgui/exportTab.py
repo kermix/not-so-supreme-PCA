@@ -1,4 +1,4 @@
-import urllib
+from urllib.parse import quote
 
 import dash_html_components as html
 import pandas as pd
@@ -95,7 +95,7 @@ def original_data_download_link(tab):
     csv_string = "data:text/csv;charset=utf-8,"
     if tab == 'export':
         data = app.context.original_data.to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
 
 
@@ -106,7 +106,7 @@ def filtered_data_download_link(tab):
     csv_string = "data:text/csv;charset=utf-8,"
     if tab == 'export':
         data = app.context.data.to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
 
 
@@ -118,7 +118,7 @@ def mean_download_link(tab):
     if tab == 'export' and app.context.scaler:
         columns = app.context.normalized_data.columns if app.context.axis else app.context.normalized_data.index
         data = pd.DataFrame(app.context.scaler.mean_vector, index=columns).to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
 
 
@@ -130,7 +130,7 @@ def std_download_link(tab):
     if tab == 'export' and app.context.scaler:
         columns = app.context.normalized_data.columns if app.context.axis else app.context.normalized_data.index
         data = pd.DataFrame(app.context.scaler.std_vector, index=columns).to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
 
 
@@ -141,7 +141,7 @@ def normalized_data_download_link(tab):
     csv_string = "data:text/csv;charset=utf-8,"
     if tab == 'export':
         data = app.context.normalized_data.to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
 
 
@@ -153,7 +153,7 @@ def var_download_link(tab):
     if tab == 'export' and app.context.PCA:
         columns = ["".join(("PC", str(i))) for i in range(1, int(len(app.context.PCA.explained_ratio)) + 1)]
         data = pd.DataFrame(app.context.PCA.explained_ratio, index=columns).to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
 
 
@@ -165,7 +165,7 @@ def eigenvalues_download_link(tab):
     if tab == 'export' and app.context.PCA:
         columns = ["".join(("PC", str(i))) for i in range(1, int(len(app.context.PCA.eigen_values)) + 1)]
         data = pd.DataFrame(app.context.PCA.eigen_values, index=columns).to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
 
 
@@ -178,7 +178,7 @@ def eigenvectors_download_link(tab):
         columns = app.context.normalized_data.columns
         index = ["".join(("PC", str(i))) for i in range(1, int(len(app.context.PCA.components)) + 1)]
         data = pd.DataFrame(app.context.PCA.components, index=index, columns=columns).to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
 
 
@@ -189,5 +189,5 @@ def transformed_data_download_link(tab):
     csv_string = "data:text/csv;charset=utf-8,"
     if tab == 'export':
         data = app.context.transformed_data.to_csv(encoding='utf-8')
-        csv_string += urllib.parse.quote(data)
+        csv_string += quote(data)
     return csv_string
