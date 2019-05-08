@@ -52,7 +52,7 @@ def read_data(file_name: str, buffer=None, **kwargs) -> pd.DataFrame:
     return data
 
 
-def generate(data) -> np.ndarray:
+def generate(data: pd.DataFrame) -> np.ndarray:
     """
 
     Extracts numeric data from data frame.
@@ -60,6 +60,15 @@ def generate(data) -> np.ndarray:
     :return: (numpy.ndarray) numeric data from DataFrame
 
     """
+    # TODO tests
     return data.apply(pd.to_numeric, errors='coerce')
 
-# TODO: move to functions
+
+def get_invalid_data(data: pd.DataFrame) -> list:
+    # TODO docs and tests
+    invalid_tuples = []
+    for _, r in data.iterrows():
+        if r.isnull().values.any():
+            invalid_tuples.append(
+                {str(r.name): str(r.index[r.isna()].tolist())})
+    return invalid_tuples
