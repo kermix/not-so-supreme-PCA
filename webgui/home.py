@@ -20,7 +20,14 @@ app.layout = html.Div([
         id='tabs',
         value='home'
     ),
+    html.Div(id='errors-container', style={'color': 'red', 'height': '200px', 'overflow-y': 'auto'}),
 ])
+
+
+@app.callback(Output('errors-container', 'children'),
+              [Input('preprocessing-errors', 'children')])
+def show_error(preprocessing):
+    return list(html.P(e) for e in preprocessing)
 
 
 @app.callback([Output('tabs', 'value'),
@@ -38,6 +45,9 @@ app.layout = html.Div([
               [Input('reset-button', 'n_clicks')])
 def app_reset(_n_clicks=0):
     app.context = Context()
+
+    # TODO move layouts to function to full reset
+    # TODO  move tabs to separate apps to simplify code
 
     tab = "home"
     pagination_settings = {
