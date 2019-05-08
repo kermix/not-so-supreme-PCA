@@ -1,12 +1,10 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
-from dash.dependencies import Input, Output, State
+from dash.dependencies import *
 
 from nssPCA.data import read_data
 from .server import app
-
-# TODO: dcc.Upload for creating temp file, and reading this file using read_data().
 
 FILENAME = "/home/mateusz/data.xlsx"
 
@@ -67,7 +65,7 @@ layout = html.Div([
                 "current_page": 0,
                 "page_size": 20,
             },
-        )
+        ),
     ], className="ten columns"),
 ])
 
@@ -76,7 +74,8 @@ layout = html.Div([
     Output('datatable-paging', 'data'),
     Output('datatable-paging', 'columns'),
     Output('columns', 'options'),
-    Output('index-column', 'options')],
+    Output('index-column', 'options'),
+    Output('no-groups', 'disabled')],
     [Input('load-button', 'n_clicks'),
      Input('tabs', 'value'),
      Input('datatable-paging', 'pagination_settings')],
@@ -103,7 +102,7 @@ def update_data(_n_clicks, tab, pagination_settings, index_column, columns):
                 ].to_dict('rows')
     page_columns = [{'name': i, 'id': i} for i in app.context.data.columns]
 
-    return page_data, page_columns, columns, columns
+    return page_data, page_columns, columns, columns, False
 
 
 @app.callback([Output('load-button', 'n_clicks'),
