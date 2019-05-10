@@ -130,6 +130,6 @@ def covariance(data: np.ndarray, axis: int = 0, biased: bool = True) -> np.ndarr
     :return: (np.ndarray) Covariance matrix.
 
     """
-    return Squarer(axis=axis).transform(data) / (data.shape[axis] - (1 if biased else 0))
+    return Squarer(axis=axis).transform(data) / (data.shape[0 if axis else 1] - (1 if biased else 0))
 
 # TODO: add calculating covariance matrix as part of eigen decomposition fitting
