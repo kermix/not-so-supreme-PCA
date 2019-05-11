@@ -29,7 +29,7 @@ layout = html.Div([
         html.Span("2. Choose number of PC used to analysis", style={"padding": 10, "text-align": "right"}),
         dcc.Input(
             id='no-pcs-slider',
-            inputmode='numeric',
+            inputMode='numeric',
             type='number',
             min=1,
             max=1,

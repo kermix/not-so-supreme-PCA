@@ -15,7 +15,7 @@ layout = html.Div([
                   style={"padding": 10, "text-align": "right"}),
         dcc.Input(
             id='no-groups',
-            inputmode='numeric',
+            inputMode='numeric',
             type='number',
             min=0,
             step=1,
