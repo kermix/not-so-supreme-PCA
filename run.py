@@ -1,42 +1,82 @@
+import os
+import platform
+import socket
 import sys
-import threading
-
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication
-
-from webgui.home import app
+from contextlib import closing
 
 
-def run_app(app_port=8050, debugging=False):
-    app.run_server(port=app_port,
-                   debug=debugging)
+def activate_venv():
+    script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+    system_type = platform.system().lower()
+
+    if system_type == "windows":
+        activate_this = os.path.join(script_path, r"Scripts\activate_this.py")
+    elif system_type == "linux":
+        activate_this = os.path.join(script_path, r"bin/activate_this.py")
+
+        # Fixes segmentation fault when creating QtWebEngineView()
+        # https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1761708/comments/6
+        os.environ['QT_XCB_GL_INTEGRATION'] = 'xcb_egl'
+
+    else:
+        print("Not sure what to do on that OS")
+
+    if os.path.exists(activate_this):
+        exec(open(activate_this).read(), {'__file__': activate_this})
+        return True
+
+    return False
+
+
+def get_free_port_number():
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('127.0.0.1', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        return s.getsockname()[1]
 
 
 if __name__ == '__main__':
-    port = 8050
+    if activate_venv():
+        import threading
 
-    threading.Thread(target=run_app, args=(port, False), daemon=False).start()
+        from PyQt5.QtCore import *
+        from PyQt5.QtGui import *
+        from PyQt5.QtWebEngineWidgets import QWebEngineView
+        from PyQt5.QtWidgets import QApplication
+
+        from webgui.home import app
 
 
-    def _downloadRequested(item):  # QWebEngineDownloadItem
-        print('downloading file to:', item.path())
-        item.accept()
+        def run_app(app_port=8050, debugging=False):
+            app.run_server(port=app_port,
+                           debug=debugging)
 
 
-    qtapp = QApplication(sys.argv)
+        port = get_free_port_number()
 
-    web = QWebEngineView()
+        threading.Thread(target=run_app, args=(port, False), daemon=False).start()
 
-    web.setWindowTitle("Not so supreme PCA")
-    web.setWindowIcon(QIcon('icon.png'))
-    web.setContextMenuPolicy(Qt.PreventContextMenu)
-    web.page().profile().downloadRequested.connect(_downloadRequested)
 
-    web.load(QUrl("http://127.0.0.1:8050"))
-    web.showMaximized()
+        def _downloadRequested(item):  # QWebEngineDownloadItem
+            print('downloading file to:', item.path())
+            item.accept()
 
-    sys.exit(qtapp.exec_())
 
-    # run_app(debugging=True)
+        qtapp = QApplication(sys.argv)
+
+        web = QWebEngineView()
+
+        web.setWindowTitle("Not so supreme PCA")
+        web.setWindowIcon(QIcon('icon.png'))
+        web.setContextMenuPolicy(Qt.PreventContextMenu)
+        web.page().profile().downloadRequested.connect(_downloadRequested)
+
+        web.load(QUrl("http://127.0.0.1:{}".format(port)))
+        web.showMaximized()
+
+        sys.exit(qtapp.exec_())
+    else:
+        configure_script = {'linux': 'source configure.sh',
+                            'windows': 'run configure.bat'}
+        print("Something went wrong. You dont have virtualenv in programdir.",
+              "Please {}".format(configure_script[platform.system().lower()]))
