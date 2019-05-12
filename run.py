@@ -17,7 +17,8 @@ def activate_venv():
         # Fixes segmentation fault when creating QtWebEngineView()
         # https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1761708/comments/6
         os.environ['QT_XCB_GL_INTEGRATION'] = 'xcb_egl'
-
+    elif system_type == 'darwin':
+        activate_this = os.path.join(script_path, r"bin/activate_this.py")
     else:
         print("Not sure what to do on that OS")
 
@@ -76,7 +77,13 @@ if __name__ == '__main__':
 
         sys.exit(qtapp.exec_())
     else:
-        configure_script = {'linux': 'source configure.sh',
-                            'windows': 'run configure.bat'}
-        print("Something went wrong. You dont have virtualenv in programdir.",
-              "Please {}".format(configure_script[platform.system().lower()]))
+        configure_script = {'linux': 'Please source configure.sh',
+                            'windows': 'Please run configure.bat',
+                            'darwin': 'Please source configure.sh. OSX in not fully supported.'}
+        try:
+            message = configure_script[platform.system().lower()]
+        except KeyError:
+            message = "Unsupported operating system."
+        finally:
+            print("Something went wrong. You dont have virtualenv in programdir.",
+                  "{}".format())
