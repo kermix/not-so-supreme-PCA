@@ -1,89 +1,71 @@
+import argparse
 import os
 import platform
-import socket
 import sys
-from contextlib import closing
 
+from misc import activate_venv
+from start_console import start_cli
+from start_gui import start_gui
 
-def activate_venv():
-    script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
-    system_type = platform.system().lower()
-
-    if system_type == "windows":
-        activate_this = os.path.join(script_path, r"Scripts\activate_this.py")
-    elif system_type == "linux":
-        activate_this = os.path.join(script_path, r"bin/activate_this.py")
-
-        # Fixes segmentation fault when creating QtWebEngineView()
-        # https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1761708/comments/6
-        os.environ['QT_XCB_GL_INTEGRATION'] = 'xcb_egl'
-    elif system_type == 'darwin':
-        activate_this = os.path.join(script_path, r"bin/activate_this.py")
-    else:
-        print("Not sure what to do on that OS")
-
-    if os.path.exists(activate_this):
-        exec(open(activate_this).read(), {'__file__': activate_this})
-        return True
-
-    return False
-
-
-def get_free_port_number():
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(('127.0.0.1', 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        return s.getsockname()[1]
-
-
-if __name__ == '__main__':
+if __name__ == '__main__' or True:
     if activate_venv():
-        import threading
+        ap = argparse.ArgumentParser()
+        ap.add_argument("-c", "--console", action='store_true', help='Start program in CLI mode')
+        ap.add_argument('-i', '--in', help='Input file name. Works only with CLI')
+        ap.add_argument('-o', '--out', default=None, help='Output folder name. Works only with CLI')
+        ap.add_argument('--index', help='Name of index column. Works only with CLI')
+        ap.add_argument('--columns', choices=range(1, 4), help='Filter data columns:\n'
+                                                               '\t1. All\n'
+                                                               '\t2. Intensity\n'
+                                                               '\t3. Concentration.\n'
+                                                               'Works only with CLI. Not compatible with --regcolumns')
+        ap.add_argument('--regcolumns', help='Filter data columns by regexp. Works only with CLI. '
+                                             'Not compatible with --columns')
+        ap.add_argument('--groupcolumns', nargs='*', help='Create gropus of columns to calculate mean column. '
+                                                          'Groups should be separated by " ",'
+                                                          ' column names should be separated by ",". '
+                                                          'Ex. column1,column2 column2,column3 column4 '
+                                                          'creates 3 mean columns. Works only with CLI')
+        ap.add_argument('--center', action='store_true', help='Mean center data. Works only with CLI')
+        ap.add_argument('--standarize', action='store_true', help='Standarize data. Works only with CLI')
+        ap.add_argument('--axis', choices=range(0, 2), help='Axis to compress:\n'
+                                                            '\t1. Columns\n'
+                                                            '\t0. Rows.\n'
+                                                            'Works only with CLI')
+        ap.add_argument('--algorithm', choices=['eig', 'svd', 'qrsvd'], help='Choose decomposition algorithm')
+        ap.add_argument('--n_components', type=int, help='Number of components to projection')
+        ap.add_argument('--plot', action='store_true', help='Plot the PCA data')
 
-        from PyQt5.QtCore import *
-        from PyQt5.QtGui import *
-        from PyQt5.QtWebEngineWidgets import QWebEngineView
-        from PyQt5.QtWidgets import QApplication
+        ap.add_argument("-g", "--gui", action='store_true', help='Start program in GUI mode')
+        args = vars(ap.parse_args())
+        if args['console'] and not args['gui']:
+            if args['regcolumns'] and args['columns']:
+                print('Something went wrong. You passed --regcolumns and --columns which is ambiguous.')
+                sys.exit(-1)
+            if args['in'] and not os.path.isfile(args['in']):
+                print('Something went wrong. Input file {} does not exist.'.format(args['in']))
+                sys.exit(-1)
+            if args['out'] and not os.path.isdir(args['out']):
+                print('Something went wrong. Output directory {} does not exist.'.format(args['out']))
+                sys.exit(-1)
+            start_cli(args['in'], args['out'], args['index'], args['columns'], args['regcolumns'], args['groupcolumns'],
+                      args['center'], args['standarize'], args['axis'], args['algorithm'], args['n_components'],
+                      args['plot'])
+        elif args['console'] and args['gui']:
+            print('Something went wrong. You passed -g and -c which is ambiguous.')
+            sys.exit(-1)
+        else:
+            start_gui()  # gui
 
-        from webgui.home import app
-
-
-        def run_app(app_port=8050, debugging=False):
-            app.run_server(port=app_port,
-                           debug=debugging)
-
-
-        port = get_free_port_number()
-
-        threading.Thread(target=run_app, args=(port, False), daemon=False).start()
-
-
-        def _downloadRequested(item):  # QWebEngineDownloadItem
-            print('downloading file to:', item.path())
-            item.accept()
-
-
-        qtapp = QApplication(sys.argv)
-
-        web = QWebEngineView()
-
-        web.setWindowTitle("Not so supreme PCA")
-        web.setWindowIcon(QIcon('icon.png'))
-        web.setContextMenuPolicy(Qt.PreventContextMenu)
-        web.page().profile().downloadRequested.connect(_downloadRequested)
-
-        web.load(QUrl("http://127.0.0.1:{}".format(port)))
-        web.showMaximized()
-
-        sys.exit(qtapp.exec_())
-    else:
-        configure_script = {'linux': 'Please source configure.sh',
-                            'windows': 'Please run configure.bat',
-                            'darwin': 'Please source configure.sh. OSX in not fully supported.'}
-        try:
-            message = configure_script[platform.system().lower()]
-        except KeyError:
-            message = "Unsupported operating system."
-        finally:
-            print("Something went wrong. You dont have virtualenv in programdir.",
-                  "{}".format())
+else:
+    configure_script = {'linux': 'Please source configure.sh',
+                        'windows': 'Please run configure.bat',
+                        'darwin': 'Please source configure.sh. OSX in not fully supported.'}
+    try:
+        message = configure_script[platform.system().lower()]
+    except KeyError:
+        message = "Unsupported operating system."
+    finally:
+        print("Something went wrong. You dont have virtualenv in programdir.",
+              "{}".format(message))
+        sys.exit(-1)
