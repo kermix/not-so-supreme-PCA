@@ -4,11 +4,12 @@ import platform
 import sys
 
 from misc import activate_venv
-from start_console import start_cli
-from start_gui import start_gui
 
 if __name__ == '__main__' or True:
     if activate_venv():
+        from start_console import start_cli
+        from start_gui import start_gui
+
         ap = argparse.ArgumentParser()
         ap.add_argument("-c", "--console", action='store_true', help='Start program in CLI mode')
         ap.add_argument('-i', '--in', help='Input file name. Works only with CLI')
