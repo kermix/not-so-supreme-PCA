@@ -41,10 +41,6 @@ layout = html.Div([
     ], className="four columns"),
     html.Div([
         html.Div([dcc.Graph(id='explainded-variance-graph')], className="row"),
-        # html.Div([
-        #     html.Div("Loadings TODO", className="six columns"),
-        #     html.Div("R^2 TODO", className="six columns"),
-        # ], className='row')
     ], id='pca-output', className='eight columns')
 ])
 
