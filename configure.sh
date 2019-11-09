@@ -2,10 +2,10 @@
 
 appdir="$(dirname $(readlink -f $BASH_SOURCE))"
 
+deactivate
+
 pip3 install -U --user virtualenv
 
-python3 -m virtualenv --python=python3.7 --no-site-packages $appdir
+python3 -m virtualenv --python=python3 --no-site-packages $appdir
 
-source $appdir/bin/activate; pip3 install -r $appdir/requirements.txt
-
-
+source $appdir/bin/activate; pip3 install -U -r $appdir/requirements.txt
