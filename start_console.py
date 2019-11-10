@@ -170,3 +170,6 @@ def start_cli(input_, output, index, columns, regcolumns, groupcolumns, center, 
         port = get_free_port_number()
 
         threading.Thread(target=plt, args=(port, result), daemon=False).start()
+
+if __name__ == "__main__":
+    print("Start program using run.py")
