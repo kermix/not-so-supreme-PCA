@@ -7,9 +7,6 @@ from misc import activate_venv
 
 if __name__ == '__main__' or True:
     if activate_venv():
-        from start_console import start_cli
-        from start_gui import start_gui
-
         ap = argparse.ArgumentParser()
         ap.add_argument("-c", "--console", action='store_true', help='Start program in CLI mode')
         ap.add_argument('-i', '--in', help='Input file name. Works only with CLI')
@@ -36,8 +33,12 @@ if __name__ == '__main__' or True:
         ap.add_argument('--algorithm', choices=['eig', 'svd', 'qrsvd'], help='Choose decomposition algorithm')
         ap.add_argument('--n_components', type=int, help='Number of components to projection')
         ap.add_argument('--plot', action='store_true', help='Plot the PCA data')
-
         ap.add_argument("-g", "--gui", action='store_true', help='Start program in GUI mode')
+
+        if len(sys.argv)==1:
+            ap.print_help(sys.stderr)
+            sys.exit(1)
+
         args = vars(ap.parse_args())
         if args['console'] and not args['gui']:
             if args['regcolumns'] and args['columns']:
@@ -49,24 +50,30 @@ if __name__ == '__main__' or True:
             if args['out'] and not os.path.isdir(args['out']):
                 print('Something went wrong. Output directory {} does not exist.'.format(args['out']))
                 sys.exit(-1)
+
+            from start_console import start_cli
             start_cli(args['in'], args['out'], args['index'], args['columns'], args['regcolumns'], args['groupcolumns'],
                       args['center'], args['standarize'], args['axis'], args['algorithm'], args['n_components'],
                       args['plot'])
-        elif args['console'] and args['gui']:
-            print('Something went wrong. You passed -g and -c which is ambiguous.')
-            sys.exit(-1)
-        else:
-            start_gui()  # gui
 
-else:
-    configure_script = {'linux': 'Please source configure.sh',
-                        'windows': 'Please run configure.bat',
-                        'darwin': 'Please source configure.sh. OSX in not fully supported.'}
-    try:
-        message = configure_script[platform.system().lower()]
-    except KeyError:
-        message = "Unsupported operating system."
-    finally:
-        print("Something went wrong. You dont have virtualenv in programdir.",
-              "{}".format(message))
-        sys.exit(-1)
+        elif not args['console'] and args['gui']:
+            from start_gui import start_gui
+
+            start_gui()
+        else:
+            print('Something went wrong. You passed -g and -c or none of them what is ambiguous.')
+            ap.print_help(sys.stderr)
+            sys.exit(-1)
+
+    else:
+        configure_script = {'linux': 'Please source configure.sh',
+                            'windows': 'Please run configure.bat',
+                            'darwin': 'Please source configure.sh. OSX in not fully supported.'}
+        try:
+            message = configure_script[platform.system().lower()]
+        except KeyError:
+            message = "Unsupported operating system."
+        finally:
+            print("Something went wrong. You dont have virtualenv in programdir.",
+                "{}".format(message))
+            sys.exit(-1)
