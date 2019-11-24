@@ -104,9 +104,6 @@ def start_cli(input_, output, index, columns, regcolumns, groupcolumns, center, 
     else:
         algorithm = algorithm
 
-    center_data = True if center_data in yes_answers else False
-    standarize_data = True if standarize_data in yes_answers else False
-
     num_matrix = data.generate(filtered_matrix).values
 
     scaler = preprocessing.Scaler(calc_mean=center_data,
