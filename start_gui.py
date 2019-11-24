@@ -1,10 +1,10 @@
 import sys
 import threading
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication
+# from PyQt5.QtCore import *
+# from PyQt5.QtGui import *
+# from PyQt5.QtWebEngineWidgets import QWebEngineView
+# from PyQt5.QtWidgets import QApplication
 
 from misc import get_free_port_number
 from webgui.home import app
@@ -25,16 +25,16 @@ def start_gui():
 
     threading.Thread(target=run_app, args=(port, False), daemon=False).start()
 
-    qtapp = QApplication(sys.argv)
+    # qtapp = QApplication(sys.argv)
 
-    web = QWebEngineView()
+    # web = QWebEngineView()
 
-    web.setWindowTitle("Not so supreme PCA")
-    web.setWindowIcon(QIcon('icon.png'))
-    web.setContextMenuPolicy(Qt.PreventContextMenu)
-    web.page().profile().downloadRequested.connect(_downloadRequested)
+    # web.setWindowTitle("Not so supreme PCA")
+    # web.setWindowIcon(QIcon('icon.png'))
+    # web.setContextMenuPolicy(Qt.PreventContextMenu)
+    # web.page().profile().downloadRequested.connect(_downloadRequested)
 
-    web.load(QUrl("http://127.0.0.1:{}".format(port)))
-    web.showMaximized()
+    # web.load(QUrl("http://127.0.0.1:{}".format(port)))
+    # web.showMaximized()
 
-    sys.exit(qtapp.exec_())
+    # sys.exit(qtapp.exec_())
