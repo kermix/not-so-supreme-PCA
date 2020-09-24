@@ -10,9 +10,6 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 deactivate
-
 pip3 install -U --user virtualenv
-
 python3 -m virtualenv --python=python3 $DIR
-
 source $DIR/bin/activate; pip3 install -U -r $DIR/requirements.txt
