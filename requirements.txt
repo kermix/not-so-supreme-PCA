@@ -1,7 +1,7 @@
 # packages required by not so supreme PCA
 numpy
 pandas
-dash==0.42.0
+dash==2.15.0
 dash-daq==0.1.0
 PyQt5
 PyQtWebEngine
